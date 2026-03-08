@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard ULPL Ende - PLN UIW NTT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 50;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        
+        .sidebar-transition {
+            transition: width 0.3s ease;
+        }
+        
+        .hover-scale:hover {
+            transform: scale(1.05);
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-4px);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-slate-100">
+    <div class="min-h-screen flex">
+        <!-- Sidebar -->
+        <div id="sidebar" class="sidebar-transition w-64 bg-gradient-to-b from-blue-700 to-blue-900 shadow-2xl flex flex-col">
+            <!-- Sidebar Header -->
+            <div class="p-4 border-b border-blue-600 flex items-center justify-between">
+                <div id="sidebarContent" class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-amber-400 rounded-lg flex items-center justify-center shadow-lg">
+                        <svg class="w-6 h-6 text-blue-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-white font-bold text-sm">PLN UIW NTT</h2>
+                        <p class="text-blue-200 text-xs">ULPL Ende</p>
+                    </div>
+                </div>
+                <button onclick="toggleSidebar()" class="text-blue-200 hover:text-white">
+                    <svg id="menuIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Menu Navigation -->
+            <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+                <!-- Dashboard Utama -->
+                <button onclick="setActiveTab('home')" class="menu-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-white hover:bg-blue-600 transition-colors" data-tab="home">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                    <span class="menu-text font-medium">Dashboard Utama</span>
+                </button>
+
+                <!-- K3 Monitoring -->
+                <button onclick="setActiveTab('k3')" class="menu-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-white hover:bg-blue-600 transition-colors" data-tab="k3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                    </svg>
+                    <span class="menu-text font-medium">K3 Monitoring</span>
+                </button>
+
+                <!-- Lingkungan -->
+                <button onclick="setActiveTab('lingkungan')" class="menu-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-white hover:bg-blue-600 transition-colors" data-tab="lingkungan">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span class="menu-text font-medium">Lingkungan</span>
+                </button>
+
+                <!-- RKAP -->
+                <button onclick="showRKAPPassword()" class="menu-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-white hover:bg-blue-600 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <span class="menu-text font-medium">RKAP</span>
+                </button>
+
+                <!-- Laporan Pengusahaan -->
+                <button onclick="setActiveTab('laporan')" class="menu-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-white hover:bg-blue-600 transition-colors" data-tab="laporan">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                    </svg>
+                    <span class="menu-text font-medium">Laporan Pengusahaan</span>
+                </button>
+
+                <!-- OP HAR -->
+                <button onclick="showOPHARPassword()" class="menu-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-white hover:bg-blue-600 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/>
+                    </svg>
+                    <span class="menu-text font-medium">OP HAR</span>
+                </button>
+            </nav>
+
+            <!-- Footer -->
+            <div class="p-4 border-t border-blue-600">
+                <div class="text-blue-200 text-xs text-center">
+                    <div id="currentTime" class="font-mono"></div>
+                    <div class="mt-2">© 2024 PLN UIW NTT</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-y-auto">
+            <!-- Header -->
+            <div class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-10">
+                <div class="px-6 py-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-slate-800">Dashboard ULPL Ende</h1>
+                            <p class="text-slate-600 text-sm">Sistem Monitoring & Pelaporan Terintegrasi</p>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="flex items-center gap-3 bg-blue-50 px-4 py-2 rounded-lg border border-blue-200">
+                                <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-800 rounded-full flex items-center justify-center shadow-md">
+                                    <span class="text-white font-bold text-sm">FM</span>
+                                </div>
+                                <div class="text-left">
+                                    <p class="text-xs font-semibold text-blue-600 uppercase tracking-wide">Admin</p>
+                                    <p class="text-sm font-bold text-slate-800">Frans Juan Ady Mbeo</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="p-6">
+                <!-- Home Tab -->
+                <div id="tab-home" class="tab-content">
+                    <!-- KPI Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <!-- Total Formulir -->
+                        <div class="bg-white rounded-xl shadow-lg p-6 border border-slate-200 hover-lift transition-all">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                    </svg>
+                                </div>
+                                <span class="text-emerald-600 text-sm font-semibold">+12%</span>
+                            </div>
+                            <h3 class="text-slate-600 text-sm font-medium mb-1">Total Formulir Hari Ini</h3>
+                            <p class="text-3xl font-bold text-slate-800">48</p>
+                        </div>
+
+                        <!-- Status Keamanan -->
+                        <div class="bg-white rounded-xl shadow-lg p-6 border border-slate-200 hover-lift transition-all">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                                    </svg>
+                                </div>
+                                <span class="text-emerald-600 text-sm font-semibold">100%</span>
+                            </div>
+                            <h3 class="text-slate-600 text-sm font-medium mb-1">Status Keamanan</h3>
+                            <p class="text-3xl font-bold text-slate-800">Normal</p>
+                        </div>
+
+                        <!-- Visitor Terdaftar -->
+                        <div class="bg-white rounded-xl shadow-lg p-6 border border-slate-200 hover-lift transition-all">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/>
+                                    </svg>
+                                </div>
+                                <span class="text-emerald-600 text-sm font-semibold">+5</span>
+                            </div>
+                            <h3 class="text-slate-600 text-sm font-medium mb-1">Visitor Terdaftar</h3>
+                            <p class="text-3xl font-bold text-slate-800">23</p>
+                        </div>
+
+                        <!-- Alert Aktif -->
+                        <div class="bg-white rounded-xl shadow-lg p-6 border border-slate-200 hover-lift transition-all">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-12 h-12 bg-rose-100 rounded-lg flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                    </svg>
+                                </div>
+                                <span class="text-emerald-600 text-sm font-semibold">-3</span>
+                            </div>
+                            <h3 class="text-slate-600 text-sm font-medium mb-1">Alert Aktif</h3>
+                            <p class="text-3xl font-bold text-slate-800">2</p>
+                        </div>
+                    </div>
+
+                    <!-- Quick Access -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Formulir Section -->
+                        <div class="bg-white rounded-xl shadow-lg p-6">
+                            <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                                Formulir Cepat
+                            </h2>
+                            <div class="space-y-3">
+                                <button onclick="showCCVModal()" class="w-full p-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg text-left transition-all hover-scale">
+                                    <div class="font-semibold">Form CCV</div>
+                                    <div class="text-sm text-blue-100">Checklist Condition Vehicle</div>
+                                </button>
+                                <button onclick="showSafetyBriefingModal()" class="w-full p-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-lg text-left transition-all hover-scale">
+                                    <div class="font-semibold">Form Safety Briefing</div>
+                                    <div class="text-sm text-emerald-100">Form Pengarahan Keselamatan</div>
+                                </button>
+                                <button onclick="showFireProtectionModal()" class="w-full p-4 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white rounded-lg text-left transition-all hover-scale">
+                                    <div class="font-semibold">Form Patroli & Fire Protection</div>
+                                    <div class="text-sm text-rose-100">Form Monitoring Patroli dan Keamanan</div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Dashboard Section -->
+                        <div class="bg-white rounded-xl shadow-lg p-6">
+                            <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                </svg>
+                                Dashboard Monitoring
+                            </h2>
+                            <div class="space-y-3">
+                                <button onclick="showMonitoringCCVModal()" class="w-full p-4 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-lg text-left transition-all hover-scale">
+                                    <div class="font-semibold">Monitoring CCV</div>
+                                    <div class="text-sm text-indigo-100">Dashboard Monitoring Kendaraan</div>
+                                </button>
+                                <button onclick="window.open('https://lookerstudio.google.com/s/kx1vUa4wvmM', '_blank')" class="w-full p-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg text-left transition-all hover-scale">
+                                    <div class="font-semibold">Monitoring Fire Protection</div>
+                                    <div class="text-sm text-blue-100">Dashboard Monitoring Proteksi Kebakaran</div>
+                                </button>
+                                <button onclick="window.open('https://lookerstudio.google.com/reporting/5ecd58a0-a6b0-4f5d-a9df-5b6e11e3bfca', '_blank')" class="w-full p-4 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white rounded-lg text-left transition-all hover-scale">
+                                    <div class="font-semibold">Monitoring Safety Briefing</div>
+                                    <div class="text-sm text-emerald-100">Dashboard Pengarahan Keselamatan</div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- K3 Tab -->
+                <div id="tab-k3" class="tab-content hidden">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-6">K3 Monitoring System</h2>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Formulir K3 -->
+                        <div class="bg-white rounded-xl shadow-lg p-6">
+                            <h3 class="text-lg font-bold text-slate-800 mb-4">Formulir K3</h3>
+                            <div class="space-y-3">
+                                <button onclick="showCCVModal()" class="w-full p-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg text-left transition-all">
+                                    <div class="font-semibold">Form CCV</div>
+                                </button>
+                                <button onclick="window.open('https://bit.ly/FormMonitoringFireProtectionUIWNTT', '_blank')" class="w-full p-4 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white rounded-lg text-left transition-all">
+                                    <div class="font-semibold">Form Monitoring Fire Protection</div>
+                                </button>
+                                <button onclick="showFireProtectionModal()" class="w-full p-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg text-left transition-all">
+                                    <div class="font-semibold">Form Patroli dan Monitoring Fire Protection</div>
+                                </button>
+                                <button onclick="window.open('https://bit.ly/FormVisitorManagementSystemUIWNTT', '_blank')" class="w-full p-4 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white rounded-lg text-left transition-all">
+                                    <div class="font-semibold">Form Visitor Management System</div>
+                                </button>
+                                <button onclick="window.open('https://bit.ly/FormAPDUIWNTT', '_blank')" class="w-full p-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg text-left transition-all">
+                                    <div class="font-semibold">Form APD</div>
+                                </button>
+                                <button onclick="window.open('https://bit.ly/FormSaranaPengamananUIWNTT', '_blank')" class="w-full p-4 bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white rounded-lg text-left transition-all">
+                                    <div class="font-semibold">Form Sarana Pengamanan</div>
+                                </button>
+                                <button onclick="showSafetyBriefingModal()" class="w-full p-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-lg text-left transition-all">
+                                    <div class="font-semibold">Form Safety Briefing</div>
+                                </button>
+                                <button onclick="window.open('https://bit.ly/FormInspeksiManajemenUIWNTT', '_blank')" class="w-full p-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg text-left transition-all">
+                                    <div class="font-semibold">Form Inspeksi Manajemen</div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Dashboard Monitoring K3 -->
+                        <div class="bg-white rounded-xl shadow-lg p-6">
+                            <h3 class="text-lg font-bold text-slate-800 mb-4">Dashboard Monitoring</h3>
+                            <div class="space-y-3">
+                                <button onclick="showMonitoringCCVModal()" class="w-full p-4 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-lg text-left transition-all">
+                                    <div class="font-semibold">Monitoring CCV</div>
+                                </button>
+                                <button onclick="window.open('https://lookerstudio.google.com/s/kx1vUa4wvmM', '_blank')" class="w-full p-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg text-left transition-all">
+                                    <div class="font-semibold">Monitoring Fire Protection</div>
+                                </button>
+                                <button onclick="window.open('https://lookerstudio.google.com/s/hR7T-xPKHKU', '_blank')" class="w-full p-4 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white rounded-lg text-left transition-all">
+                                    <div class="font-semibold">Monitoring Patroli dan Keamanan</div>
+                                </button>
+                                <button onclick="window.open('https://lookerstudio.google.com/s/nZ1xo_5gM4c', '_blank')" class="w-full p-4 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white rounded-lg text-left transition-all">
+                                    <div class="font-semibold">Monitoring Visitor Management</div>
+                                </button>
+                                <button onclick="window.open('https://lookerstudio.google.com/s/otSWgXWzqk4', '_blank')" class="w-full p-4 bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white rounded-lg text-left transition-all">
+                                    <div class="font-semibold">Monitoring APD</div>
+                                </button>
+                                <button onclick="window.open('https://lookerstudio.google.com/s/vkkZObfZJh4', '_blank')" class="w-full p-4 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white rounded-lg text-left transition-all">
+                                    <div class="font-semibold">Monitoring Sarana Pengamanan</div>
+                                </button>
+                                <button onclick="window.open('https://lookerstudio.google.com/reporting/5ecd58a0-a6b0-4f5d-a9df-5b6e11e3bfca', '_blank')" class="w-full p-4 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white rounded-lg text-left transition-all">
+                                    <div class="font-semibold">Monitoring Safety Briefing</div>
+                                </button>
+                                <button onclick="window.open('https://lookerstudio.google.com/s/mKZ6FHJ61cI', '_blank')" class="w-full p-4 bg-gradient-to-r from-blue-700 to-indigo-700 hover:from-blue-800 hover:to-indigo-800 text-white rounded-lg text-left transition-all">
+                                    <div class="font-semibold">Monitoring Inspeksi Manajemen</div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lingkungan Tab -->
+                <div id="tab-lingkungan" class="tab-content hidden">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-6">Sistem Manajemen Lingkungan</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- ENERGYST -->
+                        <button onclick="window.open('https://taplink.cc/lingkungan', '_blank')" class="bg-white rounded-xl shadow-lg p-6 text-left hover-lift transition-all border border-slate-200 hover:border-blue-400">
+                            <div class="flex items-start gap-4">
+                                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="text-lg font-bold text-slate-800 mb-1">ENERGYST</h3>
+                                    <p class="text-slate-600 text-sm">Spreadsheet Pengganti Energyst</p>
+                                </div>
+                            </div>
+                        </button>
+
+                        <!-- Database Dokumen -->
+                        <button onclick="window.open('https://taplink.cc/lingkungan', '_blank')" class="bg-white rounded-xl shadow-lg p-6 text-left hover-lift transition-all border border-slate-200 hover:border-emerald-400">
+                            <div class="flex items-start gap-4">
+                                <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="text-lg font-bold text-slate-800 mb-1">DATABASE DOKUMEN LINGKUNGAN</h3>
+                                    <p class="text-slate-600 text-sm">Berisikan Dokumen Lingkungan</p>
+                                </div>
+                            </div>
+                        </button>
+
+                        <!-- Database Kegiatan Usaha -->
+                        <button onclick="showKegiatanUsahaPassword()" class="bg-white rounded-xl shadow-lg p-6 text-left hover-lift transition-all border border-slate-200 hover:border-amber-400">
+                            <div class="flex items-start gap-4">
+                                <div class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="text-lg font-bold text-slate-800 mb-1">DATA BASE KEGIATAN USAHA</h3>
+                                    <p class="text-slate-600 text-sm">Rekap data kegiatan usaha PLN UIW NTT</p>
+                                    <span class="inline-block mt-2 px-2 py-1 bg-amber-100 text-amber-700 text-xs font-semibold rounded">Protected</span>
+                                </div>
+                            </div>
+                        </button>
+
+                        <!-- Konfirmasi Pelaporan -->
+                        <button onclick="window.open('https://drive.google.com/drive/folders/1euii9mrU4pUPY5ZgVoIygWXnnlxWioHR?usp=sharing', '_blank')" class="bg-white rounded-xl shadow-lg p-6 text-left hover-lift transition-all border border-slate-200 hover:border-blue-400">
+                            <div class="flex items-start gap-4">
+                                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="text-lg font-bold text-slate-800 mb-1">KONFIRMASI PELAPORAN</h3>
+                                    <p class="text-slate-600 text-sm">Pengisian Konfirmasi Pelaporan Dataling, ESG, PPA, PPU, Limbah</p>
+                                </div>
+                            </div>
+                        </button>
+
+                        <!-- Pengurusan KKPR & NIB -->
+                        <button onclick="window.open('https://taplink.cc/lingkungan', '_blank')" class="bg-white rounded-xl shadow-lg p-6 text-left hover-lift transition-all border border-slate-200 hover:border-indigo-400">
+                            <div class="flex items-start gap-4">
+                                <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="text-lg font-bold text-slate-800 mb-1">Pengurusan KKPR & NIB</h3>
+                                    <p class="text-slate-600 text-sm">Data Kelengkapan Persyaratan KKPR dan NIB</p>
+                                </div>
+                            </div>
+                        </button>
+
+                        <!-- Akun Dataling -->
+                        <button onclick="window.open('https://taplink.cc/lingkungan', '_blank')" class="bg-white rounded-xl shadow-lg p-6 text-left hover-lift transition-all border border-slate-200 hover:border-rose-400">
+                            <div class="flex items-start gap-4">
+                                <div class="w-12 h-12 bg-rose-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-6 h-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="text-lg font-bold text-slate-800 mb-1">AKUN DATALING</h3>
+                                    <p class="text-slate-600 text-sm">Update Akun Aplikasi DATALING</p>
+                                </div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Laporan Tab -->
+                <div id="tab-laporan" class="tab-content hidden">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-6">Laporan Pengusahaan</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <button onclick="window.open('https://bit.ly/RAPBUIWNTTrevisi', '_blank')" class="bg-white rounded-xl shadow-lg p-6 text-left hover-lift transition-all border border-slate-200 hover:border-blue-400">
+                            <div class="flex items-center gap-4 mb-3">
+                                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                    </svg>
+                                </div>
+                                <h3 class="text-lg font-bold text-slate-800">RAPB</h3>
+                            </div>
+                            <p class="text-slate-600 text-sm">Rencana Anggaran Pendapatan dan Belanja</p>
+                        </button>
+
+                        <button onclick="showLaporanRegulerModal()" class="bg-white rounded-xl shadow-lg p-6 text-left hover-lift transition-all border border-slate-200 hover:border-emerald-400">
+                            <div class="flex items-center gap-4 mb-3">
+                                <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                    </svg>
+                                </div>
+                                <h3 class="text-lg font-bold text-slate-800">Laporan Reguler</h3>
+                            </div>
+                            <p class="text-slate-600 text-sm">Laporan Pengusahaan Reguler</p>
+                            <div class="mt-2 flex items-center gap-2 text-emerald-600 text-xs font-semibold">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                                <span>3 Sub Menu</span>
+                            </div>
+                        </button>
+
+                        <button onclick="showLaporanVIPModal()" class="bg-white rounded-xl shadow-lg p-6 text-left hover-lift transition-all border border-slate-200 hover:border-amber-400">
+                            <div class="flex items-center gap-4 mb-3">
+                                <div class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                    </svg>
+                                </div>
+                                <h3 class="text-lg font-bold text-slate-800">Laporan VIP</h3>
+                            </div>
+                            <p class="text-slate-600 text-sm">Laporan Pengusahaan VIP</p>
+                            <div class="mt-2 flex items-center gap-2 text-amber-600 text-xs font-semibold">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                                <span>5 Sub Menu</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal CCV -->
+    <div id="ccvModal" class="modal-overlay">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 rounded-t-2xl sticky top-0 z-10">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-2xl font-bold text-white">Pilih Form CCV</h3>
+                    <button onclick="closeCCVModal()" class="text-white hover:bg-white/20 p-2 rounded-lg transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-6 space-y-3">
+                <button onclick="window.open('https://bit.ly/AutoCCVPLTDMautapaga', '_blank')" class="w-full p-4 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 rounded-xl border-2 border-blue-300 text-left transition-all">
+                    <div class="font-semibold text-blue-900">AutoCCV PLTD Mautapaga</div>
+                </button>
+                <button onclick="window.open('https://bit.ly/AutoCCVPLTDNdoriwoy', '_blank')" class="w-full p-4 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 rounded-xl border-2 border-blue-300 text-left transition-all">
+                    <div class="font-semibold text-blue-900">AutoCCV PLTD Ndoriwoy</div>
+                </button>
+                <button onclick="window.open('https://bit.ly/AutoCCVPLTDPota', '_blank')" class="w-full p-4 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 rounded-xl border-2 border-blue-300 text-left transition-all">
+                    <div class="font-semibold text-blue-900">AutoCCV PLTD Pota</div>
+                </button>
+                <button onclick="window.open('https://bit.ly/AutoCCVPLTDGolobilas', '_blank')" class="w-full p-4 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 rounded-xl border-2 border-blue-300 text-left transition-all">
+                    <div class="font-semibold text-blue-900">AutoCCV PLTD Golobilas</div>
+                </button>
+                <button onclick="window.open('https://bit.ly/AutoCCVPLTDKomodo', '_blank')" class="w-full p-4 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 rounded-xl border-2 border-blue-300 text-left transition-all">
+                    <div class="font-semibold text-blue-900">AutoCCV PLTD Komodo</div>
+                </button>
+                <button onclick="window.open('https://bit.ly/AutoCCVPLTDRinca', '_blank')" class="w-full p-4 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 rounded-xl border-2 border-blue-300 text-left transition-all">
+                    <div class="font-semibold text-blue-900">AutoCCV PLTD Rinca</div>
+                </button>
+                <button onclick="window.open('https://bit.ly/AutoCCVPLTMHWaegarit', '_blank')" class="w-full p-4 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 rounded-xl border-2 border-blue-300 text-left transition-all">
+                    <div class="font-semibold text-blue-900">AutoCCV PLTMH Waegarit</div>
+                </button>
+                <button onclick="window.open('https://bit.ly/AutoCCVPLTMHOgi', '_blank')" class="w-full p-4 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 rounded-xl border-2 border-blue-300 text-left transition-all">
+                    <div class="font-semibold text-blue-900">AutoCCV PLTMH Ogi</div>
+                </button>
+                <button onclick="window.open('https://bit.ly/AutoCCVPLTSSeraya', '_blank')" class="w-full p-4 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 rounded-xl border-2 border-blue-300 text-left transition-all">
+                    <div class="font-semibold text-blue-900">AutoCCV PLTS Seraya</div>
+                </button>
+                <button onclick="window.open('https://bit.ly/AutoCCVPLTSBatuTiga', '_blank')" class="w-full p-4 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 rounded-xl border-2 border-blue-300 text-left transition-all">
+                    <div class="font-semibold text-blue-900">AutoCCV PLTS Batu Tiga</div>
+                </button>
+                <button onclick="window.open('https://bit.ly/AutoCCVPLTSMessa', '_blank')" class="w-full p-4 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 rounded-xl border-2 border-blue-300 text-left transition-all">
+                    <div class="font-semibold text-blue-900">AutoCCV PLTS Messa</div>
+                </button>
+                <button onclick="window.open('https://bit.ly/AutoCCVPLTSPapagarang', '_blank')" class="w-full p-4 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 rounded-xl border-2 border-blue-300 text-left transition-all">
+                    <div class="font-semibold text-blue-900">AutoCCV PLTS Papagarang</div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Monitoring CCV -->
+    <div id="monitoringCCVModal" class="modal-overlay">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full">
+            <div class="bg-gradient-to-r from-indigo-600 to-purple-700 p-6 rounded-t-2xl">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-2xl font-bold text-white">Pilih Dashboard Monitoring CCV</h3>
+                    <button onclick="closeMonitoringCCVModal()" class="text-white hover:bg-white/20 p-2 rounded-lg transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-6 space-y-3">
+                <button onclick="window.open('https://lookerstudio.google.com/s/vJ0UtZnwEtg', '_blank')" class="w-full p-4 bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 rounded-xl border-2 border-indigo-300 text-left transition-all">
+                    <div class="font-semibold text-indigo-900">Dashboard Monitoring CCV UIW NTT</div>
+                    <div class="text-sm text-indigo-700">Dashboard monitoring regional semua unit</div>
+                </button>
+                <button onclick="window.open('https://lookerstudio.google.com/s/r03FZF5pPVc', '_blank')" class="w-full p-4 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 rounded-xl border-2 border-blue-300 text-left transition-all">
+                    <div class="font-semibold text-blue-900">Dashboard Monitoring CCV ULPL Ende</div>
+                    <div class="text-sm text-blue-700">Dashboard monitoring khusus area Ende</div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Safety Briefing -->
+    <div id="safetyBriefingModal" class="modal-overlay">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full">
+            <div class="bg-gradient-to-r from-emerald-600 to-green-700 p-6 rounded-t-2xl">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-2xl font-bold text-white">Pilih Form Safety Briefing</h3>
+                    <button onclick="closeSafetyBriefingModal()" class="text-white hover:bg-white/20 p-2 rounded-lg transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-6 space-y-3">
+                <button onclick="window.open('https://bit.ly/FormSafetyBriefingUIWNTT', '_blank')" class="w-full p-4 bg-gradient-to-r from-emerald-50 to-green-50 hover:from-emerald-100 hover:to-green-100 rounded-xl border-2 border-emerald-300 text-left transition-all">
+                    <div class="font-semibold text-emerald-900">Form Safety Briefing UIW NTT</div>
+                    <div class="text-sm text-emerald-700">Form untuk seluruh area UIW NTT</div>
+                </button>
+                <button onclick="window.open('https://bit.ly/FormSafetyBriefingULPLEnde', '_blank')" class="w-full p-4 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 rounded-xl border-2 border-blue-300 text-left transition-all">
+                    <div class="font-semibold text-blue-900">Form Safety Briefing ULPL Ende</div>
+                    <div class="text-sm text-blue-700">Form khusus area ULPL Ende</div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Fire Protection -->
+    <div id="fireProtectionModal" class="modal-overlay">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full">
+            <div class="bg-gradient-to-r from-rose-600 to-red-700 p-6 rounded-t-2xl">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-2xl font-bold text-white">Form Patroli & Monitoring Fire Protection</h3>
+                    <button onclick="closeFireProtectionModal()" class="text-white hover:bg-white/20 p-2 rounded-lg transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-6 space-y-3">
+                <button onclick="showMFPModal()" class="w-full p-4 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 rounded-xl border-2 border-blue-300 text-left transition-all">
+                    <div class="font-semibold text-blue-900">Form MFP (Monitoring Fire Protection dan Patroli)</div>
+                    <div class="text-sm text-blue-700">Pilih area patroli: UIW NTT atau ULPL Ende</div>
+                </button>
+                <button onclick="window.open('https://bit.ly/FormPatroliKeamananUIWNTT', '_blank')" class="w-full p-4 bg-gradient-to-r from-emerald-50 to-green-50 hover:from-emerald-100 hover:to-green-100 rounded-xl border-2 border-emerald-300 text-left transition-all">
+                    <div class="font-semibold text-emerald-900">Form Patroli dan Keamanan</div>
+                    <div class="text-sm text-emerald-700">Form umum untuk patroli keamanan</div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal MFP Selection -->
+    <div id="mfpModal" class="modal-overlay">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full">
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 rounded-t-2xl">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-2xl font-bold text-white">Pilih Area Form MFP</h3>
+                    <button onclick="closeMFPModal()" class="text-white hover:bg-white/20 p-2 rounded-lg transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-6 space-y-4">
+                <button onclick="window.open('https://docs.google.com/spreadsheets/d/1TBj7WZqjNbmQHI5y9xf2iI_NWvD-i7XO/edit?usp=sharing&ouid=115195790962644715760&rtpof=true&sd=true', '_blank')" class="w-full p-6 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 rounded-xl border-2 border-blue-300 transition-all">
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 text-left">
+                            <h4 class="text-lg font-bold text-blue-900 mb-1">Form MFP UIW NTT</h4>
+                            <p class="text-blue-700 text-sm">Form patroli dan keamanan untuk seluruh area UIW NTT</p>
+                        </div>
+                    </div>
+                </button>
+
+                <button onclick="window.open('https://docs.google.com/spreadsheets/d/11SSQWZuX9HLARG87Hf5lEiBi7ksDKyAu7Rh2NJx-5hg/edit?gid=97364816#gid=97364816', '_blank')" class="w-full p-6 bg-gradient-to-r from-emerald-50 to-teal-50 hover:from-emerald-100 hover:to-teal-100 rounded-xl border-2 border-emerald-300 transition-all">
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 text-left">
+                            <div class="flex items-center gap-2 mb-1">
+                                <h4 class="text-lg font-bold text-emerald-900">Form MFP ULPL Ende</h4>
+                                <span class="px-2 py-0.5 bg-emerald-600 text-white text-xs font-bold rounded-full">LOKAL</span>
+                            </div>
+                            <p class="text-emerald-700 text-sm">Form patroli dan keamanan khusus area ULPL Ende</p>
+                        </div>
+                    </div>
+                </button>
+
+                <div class="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 rounded-lg">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                        <div class="text-sm text-slate-700">
+                            <strong class="text-blue-900">Catatan:</strong> Pilih form sesuai dengan area patroli Anda. Form MFP UIW NTT untuk pelaporan regional, Form MFP ULPL Ende untuk pelaporan lokal area Ende.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal RKAP Password -->
+    <div id="rkapPasswordModal" class="modal-overlay">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 rounded-t-2xl">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white">Akses RKAP</h3>
+                            <p class="text-blue-100 text-sm">Area Terbatas</p>
+                        </div>
+                    </div>
+                    <button onclick="closeRKAPPasswordModal()" class="text-white hover:bg-white/20 p-2 rounded-lg transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-6">
+                <label class="block text-slate-700 font-medium mb-2">Password</label>
+                <input
+                    type="password"
+                    id="rkapPasswordInput"
+                    placeholder="Masukkan password"
+                    class="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:border-blue-500 focus:ring-blue-200 transition-all"
+                />
+                <div id="rkapPasswordError" class="hidden text-rose-600 text-sm mt-2 flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                    Password salah. Silakan coba lagi.
+                </div>
+                
+                <div class="flex gap-3 mt-6">
+                    <button
+                        onclick="closeRKAPPasswordModal()"
+                        class="flex-1 px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg transition-colors"
+                    >
+                        Batal
+                    </button>
+                    <button
+                        onclick="handleRKAPPasswordSubmit()"
+                        class="flex-1 px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold rounded-lg transition-all"
+                    >
+                        Buka RKAP
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal OPHAR Password -->
+    <div id="opharPasswordModal" class="modal-overlay">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+            <div class="bg-gradient-to-r from-emerald-600 to-green-700 p-6 rounded-t-2xl">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white">Akses OP HAR</h3>
+                            <p class="text-emerald-100 text-sm">Area Terbatas</p>
+                        </div>
+                    </div>
+                    <button onclick="closeOPHARPasswordModal()" class="text-white hover:bg-white/20 p-2 rounded-lg transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-6">
+                <label class="block text-slate-700 font-medium mb-2">Password</label>
+                <input
+                    type="password"
+                    id="opharPasswordInput"
+                    placeholder="Masukkan password"
+                    class="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:border-emerald-500 focus:ring-emerald-200 transition-all"
+                />
+                <div id="opharPasswordError" class="hidden text-rose-600 text-sm mt-2 flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                    Password salah. Silakan coba lagi.
+                </div>
+                
+                <div class="flex gap-3 mt-6">
+                    <button
+                        onclick="closeOPHARPasswordModal()"
+                        class="flex-1 px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg transition-colors"
+                    >
+                        Batal
+                    </button>
+                    <button
+                        onclick="handleOPHARPasswordSubmit()"
+                        class="flex-1 px-4 py-3 bg-gradient-to-r from-emerald-600 to-green-700 hover:from-emerald-700 hover:to-green-800 text-white font-bold rounded-lg transition-all"
+                    >
+                        Buka OP HAR
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal OPHAR Menu -->
+    <div id="opharMenuModal" class="modal-overlay">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full">
+            <div class="bg-gradient-to-r from-emerald-600 to-green-700 p-6 rounded-t-2xl">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-2xl font-bold text-white">Menu OP HAR</h3>
+                    <button onclick="closeOPHARMenuModal()" class="text-white hover:bg-white/20 p-2 rounded-lg transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-6 space-y-3">
+                <button onclick="window.open('https://bit.ly/OPHARUIWNTTFormMaster', '_blank')" class="w-full p-4 bg-gradient-to-r from-emerald-50 to-green-50 hover:from-emerald-100 hover:to-green-100 rounded-xl border-2 border-emerald-300 text-left transition-all">
+                    <div class="font-semibold text-emerald-900">OP HAR UIW NTT Form Master</div>
+                </button>
+                <button onclick="window.open('https://bit.ly/OPHARUIWNTT', '_blank')" class="w-full p-4 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 rounded-xl border-2 border-blue-300 text-left transition-all">
+                    <div class="font-semibold text-blue-900">Dashboard OP HAR UIW NTT</div>
+                </button>
+                <button onclick="window.open('dashboard_dpsi_connected (2).html', '_blank')" class="w-full p-4 bg-gradient-to-r from-cyan-50 to-blue-50 hover:from-cyan-100 hover:to-blue-100 rounded-xl border-2 border-cyan-300 text-left transition-all">
+                    <div class="font-semibold text-cyan-900">Dashboard Deepsea DSE 7320 MK II</div>
+                    <div class="text-xs text-cyan-700 mt-1">PLTD Mautapaga - STOP Mode Monitoring</div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Kegiatan Usaha Password -->
+    <div id="kegiatanUsahaPasswordModal" class="modal-overlay">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+            <div class="bg-gradient-to-r from-emerald-600 to-green-700 p-6 rounded-t-2xl">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white">Akses Database Kegiatan Usaha</h3>
+                            <p class="text-emerald-100 text-sm">Area Terbatas</p>
+                        </div>
+                    </div>
+                    <button onclick="closeKegiatanUsahaPasswordModal()" class="text-white hover:bg-white/20 p-2 rounded-lg transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-6">
+                <label class="block text-slate-700 font-medium mb-2">Password</label>
+                <input
+                    type="password"
+                    id="kegiatanUsahaPasswordInput"
+                    placeholder="Masukkan password"
+                    class="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:border-emerald-500 focus:ring-emerald-200 transition-all"
+                />
+                <div id="kegiatanUsahaPasswordError" class="hidden text-rose-600 text-sm mt-2 flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                    Password salah. Silakan coba lagi.
+                </div>
+                
+                <div class="flex gap-3 mt-6">
+                    <button
+                        onclick="closeKegiatanUsahaPasswordModal()"
+                        class="flex-1 px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg transition-colors"
+                    >
+                        Batal
+                    </button>
+                    <button
+                        onclick="handleKegiatanUsahaPasswordSubmit()"
+                        class="flex-1 px-4 py-3 bg-gradient-to-r from-emerald-600 to-green-700 hover:from-emerald-700 hover:to-green-800 text-white font-bold rounded-lg transition-all"
+                    >
+                        Buka Database
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Laporan Reguler -->
+    <div id="laporanRegulerModal" class="modal-overlay">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full">
+            <div class="bg-gradient-to-r from-emerald-600 to-green-700 p-6 rounded-t-2xl">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur-sm border border-white/30">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-white">Laporan Pengusahaan Reguler</h3>
+                            <p class="text-emerald-100 text-sm">Pilih jenis laporan yang ingin diakses</p>
+                        </div>
+                    </div>
+                    <button onclick="closeLaporanRegulerModal()" class="text-white hover:bg-white/20 p-2 rounded-lg transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-6 space-y-4">
+                <!-- Laporan BBM -->
+                <button onclick="window.open('https://docs.google.com/spreadsheets/d/1PLkg3ZKPrj3XsUKZvbg4CziuwCAbOc-kEvIaJnc0fIA/edit?usp=sharing', '_blank')" class="w-full p-6 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 rounded-xl border-2 border-blue-300 hover:border-blue-400 transition-all group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:-rotate-6 transition-all">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 text-left">
+                            <div class="flex items-center gap-2 mb-1">
+                                <h4 class="text-lg font-bold text-blue-900">Laporan BBM</h4>
+                                <span class="px-2 py-0.5 bg-blue-600 text-white text-xs font-bold rounded-full">SPREADSHEET</span>
+                            </div>
+                            <p class="text-blue-700 text-sm">Laporan penggunaan dan monitoring bahan bakar minyak</p>
+                            <div class="flex items-center gap-3 text-xs mt-2">
+                                <div class="flex items-center gap-1">
+                                    <svg class="w-3 h-3 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                    </svg>
+                                    <span class="text-slate-600 font-medium">Google Sheets</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <svg class="w-6 h-6 text-blue-600 group-hover:text-indigo-600 group-hover:scale-110 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+
+                <!-- Monitoring Saldo Material -->
+                <button onclick="window.open('https://www.appsheet.com/start/7178d509-6189-451b-a8c1-807b29cdd9ae?platform=desktop#appName=06LAETAEnde-1001999403&vss=H4sIAAAAAAAAA63Pvw7CIBAG8FcxN_MErMbBmLrUuIjDWa6GSKEBqjaEd_fqnzg52ZGPy---y3A1dKsTNheQh_x9bWgECVnBbuxJgVSw9C4FbxUIBVvsXmHlnUk-GHde1Gi1X1SYKBjksQLlKD5goggy_-nJmfsJMJpcMq2hMOETxegb4u-J4eAnAkVANyQ8WXreyEgpnLW-GSLpPZedo2Rcu9W9R6crr3lHizZSeQAiBjdmugEAAA==&view=Monitoring%20Saldo%20Material', '_blank')" class="w-full p-6 bg-gradient-to-r from-emerald-50 to-teal-50 hover:from-emerald-100 hover:to-teal-100 rounded-xl border-2 border-emerald-300 hover:border-emerald-400 transition-all group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:-rotate-6 transition-all">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 text-left">
+                            <div class="flex items-center gap-2 mb-1">
+                                <h4 class="text-lg font-bold text-emerald-900">Monitoring Saldo Material</h4>
+                                <span class="px-2 py-0.5 bg-emerald-600 text-white text-xs font-bold rounded-full">APPSHEET</span>
+                            </div>
+                            <p class="text-emerald-700 text-sm">Monitoring dan tracking saldo material operasional</p>
+                            <div class="flex items-center gap-3 text-xs mt-2">
+                                <div class="flex items-center gap-1">
+                                    <svg class="w-3 h-3 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                    </svg>
+                                    <span class="text-slate-600 font-medium">AppSheet App</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <svg class="w-6 h-6 text-emerald-600 group-hover:text-teal-600 group-hover:scale-110 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+
+                <!-- Data Operasional -->
+                <button onclick="window.open('https://drive.google.com/drive/folders/1RNaCNvxNBKhbRqKLLiIi3aouFRoMTQlb', '_blank')" class="w-full p-6 bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 rounded-xl border-2 border-amber-300 hover:border-amber-400 transition-all group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 bg-gradient-to-br from-amber-600 to-orange-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:-rotate-6 transition-all">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 text-left">
+                            <div class="flex items-center gap-2 mb-1">
+                                <h4 class="text-lg font-bold text-amber-900">Data Operasional</h4>
+                                <span class="px-2 py-0.5 bg-amber-600 text-white text-xs font-bold rounded-full">DRIVE</span>
+                            </div>
+                            <p class="text-amber-700 text-sm">Folder data dan dokumen operasional lengkap</p>
+                            <div class="flex items-center gap-3 text-xs mt-2">
+                                <div class="flex items-center gap-1">
+                                    <svg class="w-3 h-3 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+                                    </svg>
+                                    <span class="text-slate-600 font-medium">Google Drive</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <svg class="w-6 h-6 text-amber-600 group-hover:text-orange-600 group-hover:scale-110 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+
+                <!-- Info Panel -->
+                <div class="mt-4 p-4 bg-gradient-to-r from-emerald-50 to-green-50 border-l-4 border-emerald-500 rounded-lg">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <div class="text-sm text-slate-700">
+                            <strong class="text-emerald-900">Info:</strong> Pilih jenis laporan sesuai kebutuhan Anda. Setiap laporan memiliki format dan tujuan yang berbeda untuk memudahkan monitoring operasional.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Laporan VIP -->
+    <div id="laporanVIPModal" class="modal-overlay">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="bg-gradient-to-r from-amber-600 to-orange-700 p-6 rounded-t-2xl sticky top-0 z-10">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur-sm border border-white/30">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-white">Laporan Pengusahaan VIP</h3>
+                            <p class="text-amber-100 text-sm">Dokumen dan laporan prioritas tinggi</p>
+                        </div>
+                    </div>
+                    <button onclick="closeLaporanVIPModal()" class="text-white hover:bg-white/20 p-2 rounded-lg transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-6 space-y-4">
+                <!-- Sertifikat & Lisensi -->
+                <button onclick="window.open('https://drive.google.com/drive/u/0/folders/1syWESE5Su9W2EBrkFQB_esyGtcts6ujN', '_blank')" class="w-full p-6 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 rounded-xl border-2 border-blue-300 hover:border-blue-400 transition-all group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:-rotate-6 transition-all">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 text-left">
+                            <div class="flex items-center gap-2 mb-1">
+                                <h4 class="text-lg font-bold text-blue-900">Sertifikat & Lisensi</h4>
+                                <span class="px-2 py-0.5 bg-blue-600 text-white text-xs font-bold rounded-full">DRIVE</span>
+                            </div>
+                            <p class="text-blue-700 text-sm">Dokumen sertifikat dan lisensi operasional</p>
+                            <div class="flex items-center gap-3 text-xs mt-2">
+                                <div class="flex items-center gap-1">
+                                    <svg class="w-3 h-3 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+                                    </svg>
+                                    <span class="text-slate-600 font-medium">Google Drive</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <svg class="w-6 h-6 text-blue-600 group-hover:text-indigo-600 group-hover:scale-110 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+
+                <!-- Analisa Kinerja -->
+                <button onclick="window.open('https://bit.ly/LaporanPengusahaanVIPUIWNTT', '_blank')" class="w-full p-6 bg-gradient-to-r from-emerald-50 to-teal-50 hover:from-emerald-100 hover:to-teal-100 rounded-xl border-2 border-emerald-300 hover:border-emerald-400 transition-all group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:-rotate-6 transition-all">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 text-left">
+                            <div class="flex items-center gap-2 mb-1">
+                                <h4 class="text-lg font-bold text-emerald-900">Analisa Kinerja</h4>
+                                <span class="px-2 py-0.5 bg-emerald-600 text-white text-xs font-bold rounded-full">ANALYTICS</span>
+                            </div>
+                            <p class="text-emerald-700 text-sm">Laporan analisa dan evaluasi kinerja operasional</p>
+                            <div class="flex items-center gap-3 text-xs mt-2">
+                                <div class="flex items-center gap-1">
+                                    <svg class="w-3 h-3 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                                    </svg>
+                                    <span class="text-slate-600 font-medium">Performance Report</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <svg class="w-6 h-6 text-emerald-600 group-hover:text-teal-600 group-hover:scale-110 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+
+                <!-- Arsip Dokumen -->
+                <button onclick="window.open('https://bit.ly/LaporanPengusahaanVIPUIWNTT', '_blank')" class="w-full p-6 bg-gradient-to-r from-purple-50 to-pink-50 hover:from-purple-100 hover:to-pink-100 rounded-xl border-2 border-purple-300 hover:border-purple-400 transition-all group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:-rotate-6 transition-all">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 text-left">
+                            <div class="flex items-center gap-2 mb-1">
+                                <h4 class="text-lg font-bold text-purple-900">Arsip Dokumen</h4>
+                                <span class="px-2 py-0.5 bg-purple-600 text-white text-xs font-bold rounded-full">ARCHIVE</span>
+                            </div>
+                            <p class="text-purple-700 text-sm">Arsip dokumen penting dan historis</p>
+                            <div class="flex items-center gap-3 text-xs mt-2">
+                                <div class="flex items-center gap-1">
+                                    <svg class="w-3 h-3 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+                                    </svg>
+                                    <span class="text-slate-600 font-medium">Document Archive</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <svg class="w-6 h-6 text-purple-600 group-hover:text-pink-600 group-hover:scale-110 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+
+                <!-- Monitoring Kontrak -->
+                <button onclick="window.open('https://bit.ly/LaporanPengusahaanVIPUIWNTT', '_blank')" class="w-full p-6 bg-gradient-to-r from-rose-50 to-red-50 hover:from-rose-100 hover:to-red-100 rounded-xl border-2 border-rose-300 hover:border-rose-400 transition-all group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 bg-gradient-to-br from-rose-600 to-red-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:-rotate-6 transition-all">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 text-left">
+                            <div class="flex items-center gap-2 mb-1">
+                                <h4 class="text-lg font-bold text-rose-900">Monitoring Kontrak</h4>
+                                <span class="px-2 py-0.5 bg-rose-600 text-white text-xs font-bold rounded-full">CONTRACT</span>
+                            </div>
+                            <p class="text-rose-700 text-sm">Monitoring status dan progress kontrak</p>
+                            <div class="flex items-center gap-3 text-xs mt-2">
+                                <div class="flex items-center gap-1">
+                                    <svg class="w-3 h-3 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                                    </svg>
+                                    <span class="text-slate-600 font-medium">Contract Tracking</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <svg class="w-6 h-6 text-rose-600 group-hover:text-red-600 group-hover:scale-110 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+
+                <!-- Monitoring Laporan -->
+                <button onclick="window.open('https://bit.ly/LaporanPengusahaanVIPUIWNTT', '_blank')" class="w-full p-6 bg-gradient-to-r from-indigo-50 to-violet-50 hover:from-indigo-100 hover:to-violet-100 rounded-xl border-2 border-indigo-300 hover:border-indigo-400 transition-all group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:-rotate-6 transition-all">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 text-left">
+                            <div class="flex items-center gap-2 mb-1">
+                                <h4 class="text-lg font-bold text-indigo-900">Monitoring Laporan</h4>
+                                <span class="px-2 py-0.5 bg-indigo-600 text-white text-xs font-bold rounded-full">DASHBOARD</span>
+                            </div>
+                            <p class="text-indigo-700 text-sm">Dashboard monitoring dan tracking laporan</p>
+                            <div class="flex items-center gap-3 text-xs mt-2">
+                                <div class="flex items-center gap-1">
+                                    <svg class="w-3 h-3 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                    </svg>
+                                    <span class="text-slate-600 font-medium">Report Monitoring</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <svg class="w-6 h-6 text-indigo-600 group-hover:text-violet-600 group-hover:scale-110 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+
+                <!-- Info Panel -->
+                <div class="mt-4 p-4 bg-gradient-to-r from-amber-50 to-orange-50 border-l-4 border-amber-500 rounded-lg">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                        </svg>
+                        <div class="text-sm text-slate-700">
+                            <strong class="text-amber-900">Catatan VIP:</strong> Dokumen dan laporan pada menu ini merupakan laporan prioritas tinggi yang memerlukan perhatian khusus. Pastikan Anda memiliki akses yang sesuai sebelum membuka dokumen.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let activeTab = 'home';
+        let sidebarOpen = true;
+
+        // Update time
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleString('id-ID', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('currentTime').textContent = timeString;
+        }
+
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // Sidebar toggle
+        function toggleSidebar() {
+            sidebarOpen = !sidebarOpen;
+            const sidebar = document.getElementById('sidebar');
+            const sidebarContent = document.getElementById('sidebarContent');
+            const menuTexts = document.querySelectorAll('.menu-text');
+            const menuIcon = document.getElementById('menuIcon');
+
+            if (sidebarOpen) {
+                sidebar.classList.remove('w-20');
+                sidebar.classList.add('w-64');
+                sidebarContent.classList.remove('hidden');
+                menuTexts.forEach(text => text.classList.remove('hidden'));
+                menuIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>';
+            } else {
+                sidebar.classList.remove('w-64');
+                sidebar.classList.add('w-20');
+                sidebarContent.classList.add('hidden');
+                menuTexts.forEach(text => text.classList.add('hidden'));
+                menuIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>';
+            }
+        }
+
+        // Tab switching
+        function setActiveTab(tab) {
+            activeTab = tab;
+            
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            // Show active tab
+            document.getElementById('tab-' + tab).classList.remove('hidden');
+            
+            // Update menu items
+            document.querySelectorAll('.menu-item').forEach(item => {
+                if (item.dataset.tab === tab) {
+                    item.classList.add('bg-blue-600');
+                } else {
+                    item.classList.remove('bg-blue-600');
+                }
+            });
+        }
+
+        // Modal functions
+        function showCCVModal() {
+            document.getElementById('ccvModal').classList.add('active');
+        }
+
+        function closeCCVModal() {
+            document.getElementById('ccvModal').classList.remove('active');
+        }
+
+        function showMonitoringCCVModal() {
+            document.getElementById('monitoringCCVModal').classList.add('active');
+        }
+
+        function closeMonitoringCCVModal() {
+            document.getElementById('monitoringCCVModal').classList.remove('active');
+        }
+
+        function showSafetyBriefingModal() {
+            document.getElementById('safetyBriefingModal').classList.add('active');
+        }
+
+        function closeSafetyBriefingModal() {
+            document.getElementById('safetyBriefingModal').classList.remove('active');
+        }
+
+        function showFireProtectionModal() {
+            document.getElementById('fireProtectionModal').classList.add('active');
+        }
+
+        function closeFireProtectionModal() {
+            document.getElementById('fireProtectionModal').classList.remove('active');
+        }
+
+        function showMFPModal() {
+            closeFireProtectionModal();
+            document.getElementById('mfpModal').classList.add('active');
+        }
+
+        function closeMFPModal() {
+            document.getElementById('mfpModal').classList.remove('active');
+        }
+
+        function showRKAPPassword() {
+            document.getElementById('rkapPasswordModal').classList.add('active');
+        }
+
+        function closeRKAPPasswordModal() {
+            document.getElementById('rkapPasswordModal').classList.remove('active');
+            document.getElementById('rkapPasswordInput').value = '';
+            document.getElementById('rkapPasswordError').classList.add('hidden');
+        }
+
+        function handleRKAPPasswordSubmit() {
+            const password = document.getElementById('rkapPasswordInput').value;
+            if (password === '300925') {
+                closeRKAPPasswordModal();
+                window.open('https://docs.google.com/spreadsheets/d/1bIcOaogNGC5LBik9Tu7qCmEkKMerGs-GtQ9HViW-kxU/edit?gid=1706426032#gid=1706426032', '_blank');
+            } else {
+                document.getElementById('rkapPasswordError').classList.remove('hidden');
+            }
+        }
+
+        function showOPHARPassword() {
+            document.getElementById('opharPasswordModal').classList.add('active');
+        }
+
+        function closeOPHARPasswordModal() {
+            document.getElementById('opharPasswordModal').classList.remove('active');
+            document.getElementById('opharPasswordInput').value = '';
+            document.getElementById('opharPasswordError').classList.add('hidden');
+        }
+
+        function handleOPHARPasswordSubmit() {
+            const password = document.getElementById('opharPasswordInput').value;
+            if (password === '300925') {
+                closeOPHARPasswordModal();
+                document.getElementById('opharMenuModal').classList.add('active');
+            } else {
+                document.getElementById('opharPasswordError').classList.remove('hidden');
+            }
+        }
+
+        function closeOPHARMenuModal() {
+            document.getElementById('opharMenuModal').classList.remove('active');
+        }
+
+        function showKegiatanUsahaPassword() {
+            document.getElementById('kegiatanUsahaPasswordModal').classList.add('active');
+        }
+
+        function closeKegiatanUsahaPasswordModal() {
+            document.getElementById('kegiatanUsahaPasswordModal').classList.remove('active');
+            document.getElementById('kegiatanUsahaPasswordInput').value = '';
+            document.getElementById('kegiatanUsahaPasswordError').classList.add('hidden');
+        }
+
+        function handleKegiatanUsahaPasswordSubmit() {
+            const password = document.getElementById('kegiatanUsahaPasswordInput').value;
+            if (password === '300925') {
+                closeKegiatanUsahaPasswordModal();
+                window.open('https://docs.google.com/spreadsheets/d/1IEG5ko7XfSY-Ir9KkZK4G2K--ILPvF59/edit?usp=sharing&ouid=115195790962644715760&rtpof=true&sd=true', '_blank');
+            } else {
+                document.getElementById('kegiatanUsahaPasswordError').classList.remove('hidden');
+            }
+        }
+
+        function showLaporanRegulerModal() {
+            document.getElementById('laporanRegulerModal').classList.add('active');
+        }
+
+        function closeLaporanRegulerModal() {
+            document.getElementById('laporanRegulerModal').classList.remove('active');
+        }
+
+        function showLaporanVIPModal() {
+            document.getElementById('laporanVIPModal').classList.add('active');
+        }
+
+        function closeLaporanVIPModal() {
+            document.getElementById('laporanVIPModal').classList.remove('active');
+        }
+
+        // Enter key handlers
+        document.getElementById('rkapPasswordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') handleRKAPPasswordSubmit();
+        });
+
+        document.getElementById('opharPasswordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') handleOPHARPasswordSubmit();
+        });
+
+        document.getElementById('kegiatanUsahaPasswordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') handleKegiatanUsahaPasswordSubmit();
+        });
+
+        // Close modal on outside click
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+
+        // Initialize
+        setActiveTab('home');
+    </script>
+</body>
+</html>
